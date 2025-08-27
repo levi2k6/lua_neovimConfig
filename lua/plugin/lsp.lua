@@ -25,7 +25,7 @@ local on_attach = function(client, bufnr)
 end
 
 -- Setup capabilities
-local capabilities = vim.lsp.protocol.make_client_capabilities()
+local capabilities = require("plugin.completion").capabilities
 
 -- Get lspconfig
 local lspconfig = require("lspconfig")
@@ -52,10 +52,11 @@ lspconfig.pyright.setup({
 	capabilities = capabilities,
 })
 
--- TypeScript/JavaScript
+-- TypeScript/JavaScript (with React support)
 lspconfig.ts_ls.setup({
 	on_attach = on_attach,
 	capabilities = capabilities,
+	filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
 	settings = {
 		typescript = {
 			inlayHints = {
@@ -168,4 +169,10 @@ lspconfig.jdtls.setup({
 			},
 		},
 	},
+})
+
+-- Spring Boot Language Server
+lspconfig.spring_boot_ls.setup({
+	on_attach = on_attach,
+	capabilities = capabilities,
 })
