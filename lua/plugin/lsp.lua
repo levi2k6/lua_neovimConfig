@@ -1,16 +1,16 @@
 -- Configure diagnostics
 vim.diagnostic.config({
-	virtual_text = true,
-	signs = true,
-	update_in_insert = false,
-	severity_sort = true,
+    virtual_text = true,
+    signs = true,
+    update_in_insert = false,
+    severity_sort = true,
 })
 
--- LSP keybindings function
+-- LSP keybindings
 local on_attach = function(client, bufnr)
-	local opts = { buffer = bufnr, silent = true, noremap = true }
+    local opts = { buffer = bufnr, silent = true, noremap = true }
 
-	-- Navigation
+    -- Navigation
     vim.keymap.set("n", "<leader>ee", vim.lsp.buf.definition, opts)
     vim.keymap.set("n", "<leader>ew", vim.lsp.buf.references, opts)
     vim.keymap.set("n", "<leader>ei", vim.lsp.buf.implementation, opts)
@@ -24,155 +24,100 @@ local on_attach = function(client, bufnr)
     vim.keymap.set("n", "<leader>e>", function() vim.lsp.buf.format({ async = true }) end, opts)
 end
 
--- Setup capabilities
+-- LSP capabilities for nvim-cmp
 local capabilities = require("plugin.completion").capabilities
 
 -- Get lspconfig
 local lspconfig = require("lspconfig")
 
--- Lua Language Server
+-- Lua
 lspconfig.lua_ls.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-	settings = {
-		Lua = {
-			diagnostics = { globals = { "vim" } },
-			workspace = {
-				library = vim.api.nvim_get_runtime_file("", true),
-				checkThirdParty = false,
-			},
-			telemetry = { enable = false },
-		},
-	},
+    on_attach = on_attach,
+    capabilities = capabilities,
+    settings = {
+        Lua = {
+            diagnostics = { globals = { "vim" } },
+            workspace = {
+                library = vim.api.nvim_get_runtime_file("", true),
+                checkThirdParty = false,
+            },
+            telemetry = { enable = false },
+        },
+    },
 })
 
 -- Python
 lspconfig.pyright.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
+    on_attach = on_attach,
+    capabilities = capabilities,
 })
 
--- TypeScript/JavaScript (with React support)
+-- TypeScript / JavaScript
 lspconfig.ts_ls.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-	filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
-	settings = {
-		typescript = {
-			inlayHints = {
-				includeInlayParameterNameHints = "all",
-				includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-				includeInlayFunctionParameterTypeHints = true,
-				includeInlayVariableTypeHints = true,
-				includeInlayPropertyDeclarationTypeHints = true,
-				includeInlayFunctionLikeReturnTypeHints = true,
-				includeInlayEnumMemberValueHints = true,
-			},
-		},
-		javascript = {
-			inlayHints = {
-				includeInlayParameterNameHints = "all",
-				includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-				includeInlayFunctionParameterTypeHints = true,
-				includeInlayVariableTypeHints = true,
-				includeInlayPropertyDeclarationTypeHints = true,
-				includeInlayFunctionLikeReturnTypeHints = true,
-				includeInlayEnumMemberValueHints = true,
-			},
-		},
-	},
+    on_attach = on_attach,
+    capabilities = capabilities,
+    filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+    settings = {
+        typescript = { inlayHints = { includeInlayParameterNameHints = "all" } },
+        javascript = { inlayHints = { includeInlayParameterNameHints = "all" } },
+    },
 })
 
 -- C/C++
 lspconfig.clangd.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-	cmd = {
-		"clangd",
-		"--background-index",
-		"--clang-tidy",
-		"--header-insertion=iwyu",
-		"--completion-style=detailed",
-		"--function-arg-placeholders",
-		"--fallback-style=llvm",
-	},
-	init_options = {
-		usePlaceholders = true,
-		completeUnimported = true,
-		clangdFileStatus = true,
-	},
+    on_attach = on_attach,
+    capabilities = capabilities,
+    cmd = {
+        "clangd",
+        "--background-index",
+        "--clang-tidy",
+        "--header-insertion=iwyu",
+        "--completion-style=detailed",
+        "--function-arg-placeholders",
+        "--fallback-style=llvm",
+    },
+    init_options = {
+        usePlaceholders = true,
+        completeUnimported = true,
+        clangdFileStatus = true,
+    },
 })
 
 -- Go
 lspconfig.gopls.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-	settings = {
-		gopls = {
-			analyses = {
-				unusedparams = true,
-				unreachable = true,
-				fieldalignment = true,
-			},
-			staticcheck = true,
-			gofumpt = true,
-			completeUnimported = true,
-			usePlaceholders = true,
-			hints = {
-				assignVariableTypes = true,
-				compositeLiteralFields = true,
-				constantValues = true,
-				functionTypeParameters = true,
-				parameterNames = true,
-				rangeVariableTypes = true,
-			},
-		},
-	},
+    on_attach = on_attach,
+    capabilities = capabilities,
+    settings = {
+        gopls = {
+            analyses = { unusedparams = true, unreachable = true, fieldalignment = true },
+            staticcheck = true,
+            gofumpt = true,
+            completeUnimported = true,
+            usePlaceholders = true,
+            hints = {
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                constantValues = true,
+                functionTypeParameters = true,
+                parameterNames = true,
+                rangeVariableTypes = true,
+            },
+        },
+    },
 })
 
--- Java
+-- Java (JDTLS) — Mason handles installation
 lspconfig.jdtls.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-	settings = {
-		java = {
-			configuration = {
-				updateBuildConfiguration = "interactive",
-			},
-			completion = {
-				favoriteStaticMembers = {
-					"org.hamcrest.MatcherAssert.assertThat",
-					"org.hamcrest.Matchers.*",
-					"org.hamcrest.CoreMatchers.*",
-					"org.junit.jupiter.api.Assertions.*",
-					"java.util.Objects.requireNonNull",
-					"java.util.Objects.requireNonNullElse",
-				},
-				importOrder = {
-					"java",
-					"javax",
-					"com",
-					"org",
-				},
-			},
-			sources = {
-				organizeImports = {
-					starThreshold = 9999,
-					staticStarThreshold = 9999,
-				},
-			},
-			codeGeneration = {
-				toString = {
-					template = "${object.className}{${member.name()}=${member.value}, ${otherMembers}}"
-				},
-				useBlocks = true,
-			},
-		},
-	},
+    on_attach = on_attach,
+    capabilities = capabilities,
 })
 
--- Spring Boot Language Server
-lspconfig.spring_boot_ls.setup({
+-- Spring Boot LSP
+--
+if vim.bo.filetype == "java" then
+    lspconfig.spring_boot_ls.setup({
 	on_attach = on_attach,
 	capabilities = capabilities,
-})
+	root_dir = lspconfig.util.root_pattern(".git", "pom.xml", "build.gradle"),
+    })
+end
