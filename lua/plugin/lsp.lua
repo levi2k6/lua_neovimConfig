@@ -106,18 +106,4 @@ lspconfig.gopls.setup({
     },
 })
 
--- Java (JDTLS) — Mason handles installation
-lspconfig.jdtls.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-})
 
--- Spring Boot LSP
---
-if vim.bo.filetype == "java" then
-    lspconfig.spring_boot_ls.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-	root_dir = lspconfig.util.root_pattern(".git", "pom.xml", "build.gradle"),
-    })
-end

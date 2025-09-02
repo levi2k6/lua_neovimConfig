@@ -39,6 +39,13 @@ return{
 	end
     },
     {
+	"mfussenegger/nvim-jdtls",
+	ft = { "java" },
+	dependencies = {
+	  "neovim/nvim-lspconfig",
+	},
+    },
+    {
       "hrsh7th/nvim-cmp",
       event = "InsertEnter",
       dependencies = {
