@@ -1,4 +1,9 @@
-require("telescope").setup{}
+require("telescope").setup({
+    defaults = {
+	hidden = true,
+	no_ignore = true
+    }
+})
 
 local builtin = require("telescope.builtin")
 
