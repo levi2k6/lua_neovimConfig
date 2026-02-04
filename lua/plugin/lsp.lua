@@ -50,6 +50,20 @@ lspconfig.lua_ls.setup({
 lspconfig.pyright.setup({
     on_attach = on_attach,
     capabilities = capabilities,
+    before_init = function(_, config)
+	local cwd = vim.fn.getcwd()
+
+	local venvPaths = {"venv/bin/python", ".venv/bin/python"}
+	for _, path in ipairs(venvPaths) do 
+	   local fullPath = cwd .. "/" .. path
+	   if vim.fn.filereadable(fullPath) == 1 then
+		config.settings.python.pythonPath = fullPath
+		return
+	   end
+	end
+
+	config.settings.python.pythonPath = vim.fn.exepath("python3")
+    end
 })
 
 -- TypeScript / JavaScript
