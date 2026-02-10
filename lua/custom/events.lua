@@ -1,15 +1,17 @@
+local settings = require("custom.settings.settings")
+local manager = require("custom.settings.settingsManager")
 
-local config = require("custom.config")
+print("events is on")
 
-vim.api.nvim_create_autocmd({"BufReadPost", "BufNewFile"}, {
-    pattern="*",
+vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter" }, {
     callback = function()
-	vim.bo.shiftwidth = config.sizeWidth;
-	vim.wo.number = config.isNumberSet;
-	if config.isNumberRelative then
-	    vim.wo.relativenumber = config.isNumberRelative
-	elseif not config.isNumberRelative  then
-	    vim.wo.relativenumber = config.isNumberRelative 
-	end
+        manager.apply(settings)
+    end
+})
+
+-- onQuit
+vim.api.nvim_create_autocmd("VimLeavePre", {
+    callback = function()
+        manager.save(settings)
     end
 })

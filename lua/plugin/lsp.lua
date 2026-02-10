@@ -66,6 +66,28 @@ lspconfig.pyright.setup({
     end
 })
 
+-- Add this after your LSP setup
+vim.api.nvim_create_autocmd("BufWritePost", {
+    pattern = "*.py",
+    callback = function()
+        -- Check if this is a newly created file
+        local clients = vim.lsp.get_clients({ bufnr = 0 })
+        for _, client in ipairs(clients) do
+            if client.name == "pyright" then
+                -- Notify the server about the workspace change
+                client.notify("workspace/didChangeWatchedFiles", {
+                    changes = {
+                        {
+                            uri = vim.uri_from_bufnr(0),
+                            type = 1 -- Created
+                        }
+                    }
+                })
+            end
+        end
+    end,
+})
+
 -- TypeScript / JavaScript
 lspconfig.ts_ls.setup({
     on_attach = on_attach,
